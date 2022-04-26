@@ -1,0 +1,23 @@
+﻿@model List<Actor>
+
+<h1>Actors</h1>
+<a asp-action="Create" class="btn-primary">Create</a>
+<table class="table">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>DOB</th>
+        <th>Oscars</th>
+    </tr>
+    @foreach(var actor in Model)
+    {
+        <tr>
+            <td>@actor.ID</td>
+            <td>@actor.Name</td>
+            <td>@actor.BirthDate.ToShortDateString()</td>
+            <td class="text-end">@actor.OscarWon</td>
+            <td><a asp-action="Update" asp-route-id=@actor.ID class="btn-primary">Edit</a></td>
+            <td><a asp-action="Delete" asp-route-id=@actor.ID class="btn-primary">Delete</a></td>
+        </tr>
+    }
+</table>

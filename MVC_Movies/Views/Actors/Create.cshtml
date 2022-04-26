@@ -1,0 +1,60 @@
+﻿@model Actor
+
+<h1>Create</h1>
+
+<form method="post" asp-action="Create">
+    <div class="form-group">
+        <div class="mb-3">
+            <label asp-for="Name">Name</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="BirthDate">Date of birth</label>
+            <input asp-for="BirthDate" class="form-control" />
+            <span asp-validation-for="BirthDate" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="gender"></label>
+            <select asp-for="gender" class="form-control"></select>
+                @foreach(var gender in Enum.GetValues(typeof(Gender)))
+                {
+                    <option value="@gender">@gender.ToString()</option>
+                }
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="OscarWon">Oscars won</label>
+            <input asp-for="OscarWon" class="form-control" />
+            <span asp-validation-for="OscarWon" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+
+        @if (ViewData["Response"] != null)
+        {
+            <div class="mb-3">
+                <div class="alert alert-success">
+                    @ViewData["Response"]
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="mb-3">
+                <div class="alert alert-warning">
+                    @ViewData["Error"]
+                </div>
+            </div>
+        }
+    </div>
+</form>
+
+@section Scripts
+{ 
+    @Html.PartialAsync("_ValidationScriptsPartial")
+}
