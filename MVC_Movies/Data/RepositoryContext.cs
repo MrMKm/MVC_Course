@@ -13,7 +13,6 @@ namespace MVC_Movies.Data
         public RepositoryContext(DbContextOptions<RepositoryContext> options) : base(options) { }
 
         public DbSet<Actor> Actor { get; set; }
-
-
+        public DbSet<Movie> Movie { get; set; }
     }
 }

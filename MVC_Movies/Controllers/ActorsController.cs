@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MVC_Movies.Data;
 using MVC_Movies.Models;
+using MVC_Movies.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,16 +11,16 @@ namespace MVC_Movies.Controllers
 {
     public class ActorsController : Controller
     {
-        private readonly RepositoryContext _repositoryContext;
+        private readonly IActorRepository _actorRepository;
 
-        public ActorsController(RepositoryContext repositoryContext)
+        public ActorsController(IActorRepository actorRepository)
         {
-            _repositoryContext = repositoryContext;
+            _actorRepository = actorRepository;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var actors = _repositoryContext.Actor.ToList();
+            var actors = await _actorRepository.GetActors();
             return View(actors);
         }
 
@@ -29,7 +30,7 @@ namespace MVC_Movies.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Actor actor)
+        public async Task<IActionResult> Create(Actor actor)
         {
             if (!ModelState.IsValid)
             {
@@ -37,18 +38,16 @@ namespace MVC_Movies.Controllers
                 return View();
             }
 
-
-            _repositoryContext.Actor.Add(actor);
-            _repositoryContext.SaveChanges();
+            await _actorRepository.CreateActor(actor);
 
             ViewData["Response"] = $"Actor {actor.Name} added successfully";
             ViewData["Error"] = "Failed";
             return View();
         }
 
-        public IActionResult Update(int id)
+        public async Task<IActionResult> Update(int id)
         {
-            var dbActor = _repositoryContext.Actor.Find(id);
+            var dbActor = await _actorRepository.GetActorByID(id);
 
             if (dbActor == null)
                 return NotFound();
@@ -57,24 +56,15 @@ namespace MVC_Movies.Controllers
         }
 
         [HttpPost]
-        public IActionResult Update(Actor actor)
+        public async Task<IActionResult> Update(Actor actor)
         {
-            var dbActor = _repositoryContext.Actor.Find(actor.ID);
-
-            if (dbActor == null)
-                return NotFound();
-
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("", "Invalid input data");
                 return View();
             }
 
-            dbActor.Name = actor.Name;
-            dbActor.BirthDate = actor.BirthDate;
-            dbActor.OscarWon = actor.OscarWon;
-
-            _repositoryContext.SaveChanges();
+            await _actorRepository.UpdateActor(actor);
 
             ViewData["Response"] = $"Actor {actor.Name} updated successfully";
             ViewData["Error"] = "Failed";
@@ -83,9 +73,9 @@ namespace MVC_Movies.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var dbActor = _repositoryContext.Actor.Find(id);
+            var dbActor = await _actorRepository.GetActorByID(id);
 
             if (dbActor == null)
                 return NotFound();
@@ -94,15 +84,9 @@ namespace MVC_Movies.Controllers
         }
 
         [HttpPost]
-        public IActionResult Delete(Actor actor)
+        public async Task<IActionResult> Delete(Actor actor)
         {
-            var dbActor = _repositoryContext.Actor.Find(actor.ID);
-
-            if (dbActor == null)
-                return NotFound();
-
-            _repositoryContext.Actor.Remove(dbActor);
-            _repositoryContext.SaveChanges();
+            await _actorRepository.DeleteActor(actor.ID);
 
             ViewData["Response"] = $"Actor {actor.Name} deleted successfully";
             ViewData["Error"] = "Failed";

@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MVC_Movies.Data;
+using MVC_Movies.Repository.Implementations;
+using MVC_Movies.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +28,10 @@ namespace MVC_Movies
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+
+            //Life cycles of services
+            services.AddTransient<IActorRepository, ActorRepository>();
+
             services.AddDbContext<RepositoryContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
         }

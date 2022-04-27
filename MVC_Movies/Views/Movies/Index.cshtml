@@ -1,0 +1,28 @@
+﻿@model List<Movie>
+
+<h1>Movies</h1>
+<a asp-action="Create" class="btn-primary">Create</a>
+<table class="table">
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Release Date</th>
+        <th>Price</th>
+        <th>Gender</th>
+        <th>Rating</th>
+
+    </tr>
+    @foreach(var movie in Model)
+    {
+        <tr>
+            <td>@movie.ID</td>
+            <td>@movie.Title</td>
+            <td>@movie.ReleaseDate.ToShortDateString()</td>
+            <td>@movie.Price</td>
+            <td>@movie.Gender</td>
+            <td>@movie.Rating</td>
+            <td><a asp-action="Update" asp-route-id=@movie.ID class="btn-primary">Edit</a></td>
+            <td><a asp-action="Delete" asp-route-id=@movie.ID class="btn-primary">Delete</a></td>
+        </tr>
+    }
+</table>

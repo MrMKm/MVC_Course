@@ -1,0 +1,63 @@
+﻿@model Movie
+
+<h1>Delete</h1>
+
+<form method="post" asp-action="Delete">
+    <div class="form-group">
+        <div class="mb-3">
+            <label asp-for="Title">Title</label>
+            <input readonly asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ReleaseDate">Release Date</label>
+            <input asp-for="ReleaseDate" class="form-control" />
+            <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Price">Price</label>
+            <input readonly asp-for="Price" class="form-control" />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Gender">Gender</label>
+            <input readonly asp-for="Gender" class="form-control" />
+            <span asp-validation-for="Gender" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Rating">Rating</label>
+            <input readonly asp-for="Rating" class="form-control" />
+            <span asp-validation-for="Rating" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Delete</button>
+        </div>
+
+        @if (ViewData["Response"] != null)
+        {
+            <div class="mb-3">
+                <div class="alert alert-success">
+                    @ViewData["Response"]
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="mb-3">
+                <div class="alert alert-warning">
+                    @ViewData["Error"]
+                </div>
+            </div>
+        }
+    </div>
+</form>
+
+@section Scripts
+{
+    @Html.PartialAsync("_ValidationScriptsPartial")
+}
