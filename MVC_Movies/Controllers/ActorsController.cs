@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MVC_Movies.Data;
 using MVC_Movies.Models;
+using MVC_Movies.Models.Filters;
 using MVC_Movies.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -18,13 +19,18 @@ namespace MVC_Movies.Controllers
             _actorRepository = actorRepository;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(ActorFilters actorFilters)
         {
-            var actors = await _actorRepository.GetActors();
-            return View(actors);
+            var actorViewModel = new ActorViewModel
+            {
+                actors = await _actorRepository.GetActors(actorFilters),
+                actorFilters = actorFilters
+            };
+
+            return View(actorViewModel);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             return View();
         }

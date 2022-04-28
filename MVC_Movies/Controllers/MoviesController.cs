@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MVC_Movies.Data;
 using MVC_Movies.Models;
+using MVC_Movies.Models.Filters;
+using MVC_Movies.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,26 +12,37 @@ namespace MVC_Movies.Controllers
 {
     public class MoviesController : Controller
     {
-        private readonly RepositoryContext _repositoryContext;
+        private readonly IMovieRepository _movieRepository;
+        private readonly IActorRepository _actorRepository;
 
-        public MoviesController(RepositoryContext repositoryContext)
+        public MoviesController(IMovieRepository movieRepository, IActorRepository actorRepository)
         {
-            _repositoryContext = repositoryContext;
+            _movieRepository = movieRepository;
+            _actorRepository = actorRepository;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(MovieFilters movieFilters)
         {
-            var movies = _repositoryContext.Movie.ToList();
-            return View(movies);
+            var movieVM = new MovieViewModel
+            {
+                movies = await _movieRepository.GetMovies(movieFilters),
+                movieFilters = movieFilters,
+                Actors = await _actorRepository.GetActors(new ActorFilters())
+            };
+
+            return View(movieVM);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            return View(new MovieViewModel 
+            {
+                Actors = await _actorRepository.GetActors(new ActorFilters())
+            });
         }
 
         [HttpPost]
-        public IActionResult Create(Movie movie)
+        public async Task<IActionResult> Create(MovieViewModel movieVM)
         {
             if (!ModelState.IsValid)
             {
@@ -37,17 +50,19 @@ namespace MVC_Movies.Controllers
                 return View();
             }
 
-            _repositoryContext.Movie.Add(movie);
-            _repositoryContext.SaveChanges();
+            movieVM.Actors = (await _actorRepository.GetActors(new ActorFilters()))
+                .Where(a => movieVM.actorsIDs.Contains(a.ID)).ToList();
 
-            ViewData["Response"] = $"Movie '{movie.Title}' added successfully";
+            await _movieRepository.CreateMovie(movieVM);
+
+            ViewData["Response"] = $"Movie '{movieVM.Title}' added successfully";
             ViewData["Error"] = "Failed";
-            return View();
+            return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Update(int id)
+        public async Task<IActionResult> Update(int id)
         {
-            var dbmovie = _repositoryContext.Movie.Find(id);
+            var dbmovie = await _movieRepository.GetMovieByID(id);
 
             if (dbmovie == null)
                 return NotFound();
@@ -56,26 +71,16 @@ namespace MVC_Movies.Controllers
         }
 
         [HttpPost]
-        public IActionResult Update(Movie movie)
+        public async Task<IActionResult> Update(Movie movie)
         {
-            var dbmovie = _repositoryContext.Movie.Find(movie.ID);
-
-            if (dbmovie == null)
-                return NotFound();
-
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("", "Invalid input data");
                 return View();
             }
 
-            dbmovie.Title = movie.Title;
-            dbmovie.ReleaseDate = movie.ReleaseDate;
-            dbmovie.Price = movie.Price;
-            dbmovie.Gender = movie.Gender;
-            dbmovie.Rating = movie.Rating;
-
-            _repositoryContext.SaveChanges();
+            if (await _movieRepository.UpdateMovie(movie) == null)
+                return NotFound();
 
             ViewData["Response"] = $"Movie '{movie.Title}' updated successfully";
             ViewData["Error"] = "Failed";
@@ -84,9 +89,9 @@ namespace MVC_Movies.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var dbMovie = _repositoryContext.Movie.Find(id);
+            var dbMovie = await _movieRepository.GetMovieByID(id);
 
             if (dbMovie == null)
                 return NotFound();
@@ -95,15 +100,9 @@ namespace MVC_Movies.Controllers
         }
 
         [HttpPost]
-        public IActionResult Delete(Movie movie)
+        public async Task<IActionResult> Delete(Movie movie)
         {
-            var dbMovie = _repositoryContext.Movie.Find(movie.ID);
-
-            if (dbMovie == null)
-                return NotFound();
-
-            _repositoryContext.Movie.Remove(dbMovie);
-            _repositoryContext.SaveChanges();
+            await _movieRepository.DeleteMovie(movie);
 
             ViewData["Response"] = $"Movie {movie.Title} deleted successfully";
             ViewData["Error"] = "Failed";

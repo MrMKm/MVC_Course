@@ -21,6 +21,8 @@ namespace MVC_Movies.Models
         public int OscarWon { get; set; }
 
         public Gender gender { get; set; }
+
+        public ICollection<Movie> Movies { get; set; }
     }
 
     public enum Gender

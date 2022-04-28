@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MVC_Movies.Data;
 using MVC_Movies.Models;
+using MVC_Movies.Models.Filters;
 using MVC_Movies.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -61,14 +62,20 @@ namespace MVC_Movies.Repository.Implementations
             return actor;
         }
 
-        public async Task<List<Actor>> GetActors()
+        public async Task<List<Actor>> GetActors(ActorFilters filters)
         {
-            var actors = await repositoryContext.Actor.ToListAsync();
+            var actors = repositoryContext.Actor.AsQueryable();
+
+            if (!string.IsNullOrEmpty(filters.Name))
+                actors = actors.Where(a => a.Name.Contains(filters.Name));
+
+            if (filters.From.HasValue && filters.To.HasValue)
+                actors = actors.Where(a => a.BirthDate >= filters.From && a.BirthDate <= filters.To);
 
             if (!actors.Any())
                 return default;
 
-            return actors;
+            return await actors.ToListAsync();
         }
 
         public async Task<Actor> UpdateActor(Actor actor)

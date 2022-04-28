@@ -33,5 +33,7 @@ namespace MVC_Movies.Models
         [StringLength(5)]
         [RegularExpression(@"^[A-Z]+[a-zA-Z0-9""'\s-]*$")]
         public string Rating { get; set; }
+
+        public ICollection<Actor> Actors { get; set; }
     }
 }

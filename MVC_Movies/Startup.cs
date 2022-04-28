@@ -31,6 +31,7 @@ namespace MVC_Movies
 
             //Life cycles of services
             services.AddTransient<IActorRepository, ActorRepository>();
+            services.AddTransient<IMovieRepository, MovieRepository>();
 
             services.AddDbContext<RepositoryContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
