@@ -27,7 +27,7 @@ namespace MVC_Movies.Controllers
             {
                 movies = await _movieRepository.GetMovies(movieFilters),
                 movieFilters = movieFilters,
-                Actors = await _actorRepository.GetActors(new ActorFilters())
+                actors = await _actorRepository.GetActors(new ActorFilters())
             };
 
             return View(movieVM);
@@ -67,11 +67,23 @@ namespace MVC_Movies.Controllers
             if (dbmovie == null)
                 return NotFound();
 
-            return View(dbmovie);
+            var movie = new MovieViewModel
+            {
+                ID = dbmovie.ID,
+                Title = dbmovie.Title,
+                Price = dbmovie.Price,
+                Gender = dbmovie.Gender,
+                Rating = dbmovie.Rating,
+                ReleaseDate = dbmovie.ReleaseDate,
+                Actors = await _actorRepository.GetActors(new ActorFilters()),
+                actorsIDs = dbmovie.Actors.Select(a => a.ID).ToList()
+            };
+
+            return View(movie);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Update(Movie movie)
+        public async Task<IActionResult> Update(MovieViewModel movieVM)
         {
             if (!ModelState.IsValid)
             {
@@ -79,10 +91,13 @@ namespace MVC_Movies.Controllers
                 return View();
             }
 
-            if (await _movieRepository.UpdateMovie(movie) == null)
+            movieVM.Actors = (await _actorRepository.GetActors(new ActorFilters()))
+                .Where(a => movieVM.actorsIDs.Contains(a.ID)).ToList();
+
+            if (await _movieRepository.UpdateMovie(movieVM) == null)
                 return NotFound();
 
-            ViewData["Response"] = $"Movie '{movie.Title}' updated successfully";
+            ViewData["Response"] = $"Movie '{movieVM.Title}' updated successfully";
             ViewData["Error"] = "Failed";
 
 
@@ -91,20 +106,32 @@ namespace MVC_Movies.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            var dbMovie = await _movieRepository.GetMovieByID(id);
+            var dbmovie = await _movieRepository.GetMovieByID(id);
 
-            if (dbMovie == null)
+            if (dbmovie == null)
                 return NotFound();
 
-            return View(dbMovie);
+            var movie = new MovieViewModel
+            {
+                ID = dbmovie.ID,
+                Title = dbmovie.Title,
+                Price = dbmovie.Price,
+                Gender = dbmovie.Gender,
+                Rating = dbmovie.Rating,
+                ReleaseDate = dbmovie.ReleaseDate,
+                Actors = await _actorRepository.GetActors(new ActorFilters()),
+                actorsIDs = dbmovie.Actors.Select(a => a.ID).ToList()
+            };
+
+            return View(movie);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(Movie movie)
+        public async Task<IActionResult> Delete(MovieViewModel movieVM)
         {
-            await _movieRepository.DeleteMovie(movie);
+            await _movieRepository.DeleteMovie(movieVM);
 
-            ViewData["Response"] = $"Movie {movie.Title} deleted successfully";
+            ViewData["Response"] = $"Movie {movieVM.Title} deleted successfully";
             ViewData["Error"] = "Failed";
 
             return RedirectToAction(nameof(Index));

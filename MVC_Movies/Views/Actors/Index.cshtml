@@ -19,6 +19,16 @@
             <input asp-for="actorFilters.To" placeholder="To" class="form-control"/>
         </div>
     </div>
+    <div class="mb-3">
+        <label asp-for="actorFilters.MovieID">Movie</label>
+        <select asp-for="actorFilters.MovieID" class="form-control">
+            <option value="0">Select</option>
+            @foreach (var movie in Model.movies)
+            {
+                <option value="@movie.ID">@movie.Title</option>
+            }
+        </select>
+    </div>
     <div class="mt-3">
         <button type="submit" class="btn btn-secondary">Filter</button>
     </div>

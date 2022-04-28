@@ -12,6 +12,8 @@ namespace MVC_Movies.Models
 
         public List<Movie> movies { get; set; }
 
+        public List<Actor> actors { get; set; }
+
         public MovieFilters movieFilters { get; set; }
 
         public List<int> actorsIDs { get; set; }

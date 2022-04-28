@@ -15,5 +15,7 @@ namespace MVC_Movies.Models.Filters
 
         [DataType(DataType.Date)]
         public Nullable<DateTime> To { get; set; }
+
+        public int MovieID { get; set; } 
     }
 }

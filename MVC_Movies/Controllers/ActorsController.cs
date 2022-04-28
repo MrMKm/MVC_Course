@@ -13,10 +13,12 @@ namespace MVC_Movies.Controllers
     public class ActorsController : Controller
     {
         private readonly IActorRepository _actorRepository;
+        private readonly IMovieRepository _movieRepository;
 
-        public ActorsController(IActorRepository actorRepository)
+        public ActorsController(IActorRepository actorRepository, IMovieRepository movieRepository)
         {
             _actorRepository = actorRepository;
+            _movieRepository = movieRepository;
         }
 
         public async Task<IActionResult> Index(ActorFilters actorFilters)
@@ -24,7 +26,8 @@ namespace MVC_Movies.Controllers
             var actorViewModel = new ActorViewModel
             {
                 actors = await _actorRepository.GetActors(actorFilters),
-                actorFilters = actorFilters
+                actorFilters = actorFilters,
+                movies = await _movieRepository.GetMovies(new MovieFilters())
             };
 
             return View(actorViewModel);

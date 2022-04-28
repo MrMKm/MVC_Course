@@ -54,7 +54,9 @@ namespace MVC_Movies.Repository.Implementations
 
         public async Task<Actor> GetActorByID(int ActorID)
         {
-            var actor = await repositoryContext.Actor.FirstOrDefaultAsync(a => a.ID.Equals(ActorID));
+            var actor = await repositoryContext.Actor
+                .Include(a => a.Movies).AsNoTracking()
+                .FirstOrDefaultAsync(a => a.ID.Equals(ActorID));
 
             if (actor == null)
                 return default;
@@ -72,10 +74,13 @@ namespace MVC_Movies.Repository.Implementations
             if (filters.From.HasValue && filters.To.HasValue)
                 actors = actors.Where(a => a.BirthDate >= filters.From && a.BirthDate <= filters.To);
 
+            if(filters.MovieID != 0)
+                actors = actors.Where(a => a.Movies.Select(m => m.ID).Contains(filters.MovieID));
+
             if (!actors.Any())
                 return default;
 
-            return await actors.ToListAsync();
+            return await actors.Include(a => a.Movies).AsNoTracking().ToListAsync();
         }
 
         public async Task<Actor> UpdateActor(Actor actor)
@@ -88,6 +93,7 @@ namespace MVC_Movies.Repository.Implementations
             dbActor.Name = actor.Name;
             dbActor.BirthDate = actor.BirthDate;
             dbActor.OscarWon = actor.OscarWon;
+            dbActor.Movies = actor.Movies;
 
             await repositoryContext.SaveChangesAsync();
 

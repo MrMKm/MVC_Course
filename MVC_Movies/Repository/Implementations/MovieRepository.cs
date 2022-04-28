@@ -35,13 +35,15 @@ namespace MVC_Movies.Repository.Implementations
             if (dbMovie == null)
                 throw new NullReferenceException("Movie with ID not found");
 
-            repositoryContext.Remove(movie);
+            repositoryContext.Remove(dbMovie);
             await repositoryContext.SaveChangesAsync();
         }
 
         public async Task<Movie> GetMovieByID(int MovieID)
         {
-            var movie = await repositoryContext.Movie.FirstOrDefaultAsync(m => m.ID.Equals(MovieID));
+            var movie = await repositoryContext.Movie
+                .Include(m => m.Actors).AsNoTracking()
+                .FirstOrDefaultAsync(m => m.ID.Equals(MovieID));
 
             if (movie == null)
                 return default;
@@ -65,15 +67,16 @@ namespace MVC_Movies.Repository.Implementations
             if (filters.From.HasValue && filters.To.HasValue)
                 movies = movies.Where(m => m.ReleaseDate >= filters.From && m.ReleaseDate >= filters.To);
 
-            if(filters.actor != null)
-                movies = movies.Where(m => m.Actors.Contains(filters.actor));
+            if (filters.ActorID != 0)
+                movies = movies.Where(a => a.Actors.Select(m => m.ID).Contains(filters.ActorID));
 
-            return await movies.ToListAsync();
+            return await movies.Include(m => m.Actors).AsNoTracking().ToListAsync();
         }
 
         public async Task<Movie> UpdateMovie(Movie movie)
         {
-            var dbmovie = await repositoryContext.Movie.FirstOrDefaultAsync(m => m.ID.Equals(movie.ID));
+            var dbmovie = await repositoryContext.Movie.Include(m => m.Actors).FirstOrDefaultAsync(m => m.ID.Equals(movie.ID));
+            var actor = new Actor();
 
             if (dbmovie == null)
                 return default;
@@ -83,6 +86,13 @@ namespace MVC_Movies.Repository.Implementations
             dbmovie.Price = movie.Price;
             dbmovie.Gender = movie.Gender;
             dbmovie.Rating = movie.Rating;
+            dbmovie.Actors.Clear();
+
+            foreach (var ac in movie.Actors)
+            {
+                actor = repositoryContext.Actor.FirstOrDefault(a => a.ID.Equals(ac.ID));
+                dbmovie.Actors.Add(actor);
+            }
 
             await repositoryContext.SaveChangesAsync();
 

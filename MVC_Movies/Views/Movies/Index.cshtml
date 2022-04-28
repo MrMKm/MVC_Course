@@ -27,6 +27,16 @@
             <label asp-for="movieFilters.Rating">Rating</label>
             <input asp-for="movieFilters.Rating" placeholder="Rating" class="form-control" />
         </div>
+        <div class="mb-3">
+            <label asp-for="movieFilters.ActorID">Actor</label>
+            <select asp-for="movieFilters.ActorID" class="form-control">
+                <option value="0">Select</option>
+                @foreach (var actor in Model.actors)
+                {
+                    <option value="@actor.ID">@actor.Name</option>
+                }
+            </select>
+        </div>
         <div class="mt-3">
             <button type="submit" class="btn btn-secondary">Filter</button>
         </div>
@@ -41,7 +51,7 @@
         <th>Price</th>
         <th>Gender</th>
         <th>Rating</th>
-
+        <th>Actors</th>
     </tr>
     @foreach(var movie in Model.movies)
     {
@@ -52,6 +62,7 @@
             <td>@movie.Price</td>
             <td>@movie.Gender</td>
             <td>@movie.Rating</td>
+            <td>@movie.Actors.Count</td>
             <td><a asp-action="Update" asp-route-id=@movie.ID class="btn-primary">Edit</a></td>
             <td><a asp-action="Delete" asp-route-id=@movie.ID class="btn-primary">Delete</a></td>
         </tr>
