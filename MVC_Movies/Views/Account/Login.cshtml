@@ -1,0 +1,50 @@
+﻿@model LoginRequest
+
+<h1>Sign In</h1>
+
+<div class="card card-body">
+    <form method="post" asp-action="Login">
+        <div asp-validation-summary="ModelOnly"></div>
+
+        <div class="mb-3">
+            <label asp-for="Email">Email</label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Password">Password</label>
+            <input asp-for="Password" class="form-control" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" asp-for="RememberMe">
+            <label class="form-check-label" asp-for="RememberMe">
+                Remember credentials?
+            </label>
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+
+        <div class="mb-3">
+            <a asp-action="Register">Don't you have an account? Register now!</a>
+        </div>
+
+        @if (ViewData["Error"] != null)
+        {
+            <div class="mb-3">
+                <div class="alert alert-warning">
+                    @ViewData["Error"]
+                </div>
+            </div>
+        }
+    </form>
+</div>
+
+@section Scripts
+{
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

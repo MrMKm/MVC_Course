@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using MVC_Movies.Models;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MVC_Movies.Data
 {
-    public class RepositoryContext : DbContext
+    public class RepositoryContext : IdentityDbContext<ApplicationUser>
     {
         public RepositoryContext(DbContextOptions<RepositoryContext> options) : base(options) { }
 

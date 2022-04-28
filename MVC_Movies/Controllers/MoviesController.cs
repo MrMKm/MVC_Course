@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MVC_Movies.Data;
 using MVC_Movies.Models;
 using MVC_Movies.Models.Filters;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace MVC_Movies.Controllers
 {
+    [Authorize]
     public class MoviesController : Controller
     {
         private readonly IMovieRepository _movieRepository;
