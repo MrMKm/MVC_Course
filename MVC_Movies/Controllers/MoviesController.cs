@@ -181,7 +181,7 @@ namespace MVC_Movies.Controllers
                 return RedirectToAction("Details", new { ID = movie.ID });
 
             else
-                return BadRequest(this);
+                return BadRequest();
         }
     }
 }
