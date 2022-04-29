@@ -56,6 +56,7 @@ namespace MVC_Movies.Repository.Implementations
         {
             var actor = await repositoryContext.Actor
                 .Include(a => a.Movies).AsNoTracking()
+                .Include(m => m.Rates).ThenInclude(r => r.User)
                 .FirstOrDefaultAsync(a => a.ID.Equals(ActorID));
 
             if (actor == null)
@@ -98,6 +99,33 @@ namespace MVC_Movies.Repository.Implementations
             await repositoryContext.SaveChangesAsync();
 
             return dbActor;
+        }
+
+        public async Task<Actor> GetActorWithRates(int ActorID)
+        {
+            var actor = await repositoryContext.Actor
+                .Include(m => m.Movies).AsNoTracking()
+                .Include(m => m.Rates).ThenInclude(r => r.User)
+                .FirstOrDefaultAsync(m => m.ID.Equals(ActorID));
+
+            if (actor == null)
+                return default;
+
+            return actor;
+        }
+
+        public async Task<bool> RateActor(ActorRate rate)
+        {
+            var actorRate = repositoryContext.ActorRate
+                .FirstOrDefault(r => r.User.Id.Equals(rate.User.Id) && r.ActorID.Equals(rate.ActorID));
+
+            if (actorRate != null)
+                return false;
+
+            repositoryContext.ActorRate.Add(rate);
+            var change = await repositoryContext.SaveChangesAsync();
+
+            return change > 0;
         }
     }
 }

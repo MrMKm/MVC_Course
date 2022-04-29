@@ -1,0 +1,46 @@
+﻿@page
+@model MVC_Movies.Pages.ActorRateModel
+
+<h1>@Model.Actor.Name</h1>
+
+<ul>
+    <li>Birth date: @Model.Actor.BirthDate.ToShortDateString()</li>
+    <li>Gender: @Model.Actor.gender.ToString()</li>
+    <li>Oscars: @Model.Actor.OscarWon</li>
+
+    <hr />
+    @if (User.Identity.IsAuthenticated)
+    {
+        if (User.IsInRole(Role.User.ToString()))
+        {
+            <form method="post">
+                <input type="hidden" name="ID" value="@Model.Form.ID" />
+                <div class="d-flex">
+                    <span><input type="radio" name="Stars" value="1" /><i class="fa-solid fa-star text-warning"></i></span>
+                    <span><input type="radio" name="Stars" value="2" /><i class="fa-solid fa-star text-warning"></i></span>
+                    <span><input type="radio" name="Stars" value="3" /><i class="fa-solid fa-star text-warning"></i></span>
+                    <span><input type="radio" name="Stars" value="4" /><i class="fa-solid fa-star text-warning"></i></span>
+                    <span><input type="radio" name="Stars" value="5" /><i class="fa-solid fa-star text-warning"></i></span>
+                </div>
+
+                <div class="mb-3">
+                    <label>Comments</label>
+                    <textarea name="Comments" class="form-control"></textarea>
+                </div>
+
+                <div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        }
+        else
+        {
+            <div class="lead">Sign In in User account to review this Actor</div>
+        }
+    }
+</ul>
+
+@section Scripts
+{
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

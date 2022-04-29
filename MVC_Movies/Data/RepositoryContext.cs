@@ -16,6 +16,7 @@ namespace MVC_Movies.Data
         public DbSet<Actor> Actor { get; set; }
         public DbSet<Movie> Movie { get; set; }
         public DbSet<UserRate> MovieRate { get; set; }
+        public DbSet<ActorRate> ActorRate { get; set; }
 
         //protected override void OnModelCreating(ModelBuilder optionsBuilder)
         //{

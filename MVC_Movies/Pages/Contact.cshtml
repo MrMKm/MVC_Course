@@ -1,0 +1,28 @@
+﻿@page
+@model ContactModel
+
+<h1>@Model.Message</h1>
+
+<form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="Form.Name">Name</label>
+        <input asp-for="Form.Name" class="form-control" />
+        <span asp-validation-for="Form.Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Form.Email">Email</label>
+        <input asp-for="Form.Email" class="form-control" />
+        <span asp-validation-for="Form.Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Form.Message">Message</label>
+        <textarea asp-for="Form.Message" class="form-control"></textarea>
+        <span asp-validation-for="Form.Message" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <button asp-page-handler="Cancel" type="submit" class="btn btn-secondary">Cancel</button>
+</form>

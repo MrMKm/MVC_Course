@@ -1,0 +1,29 @@
+﻿@page
+@model MVC_Movies.Pages.ActorDetailsModel
+
+<h1>@Model.Actor.Name</h1>
+
+<ul>
+    <li>Birth date: @Model.Actor.BirthDate.ToShortDateString()</li>
+    <li>Gender: @Model.Actor.gender.ToString()</li>
+    <li>Oscars: @Model.Actor.OscarWon</li>
+
+    <hr />
+    @foreach (var rate in Model.Actor.Rates)
+    {
+        <hr />
+        <h5>@rate.User.Name</h5>
+        for (int i = 0; i < rate.Stars; i++)
+        {
+            <span class="me-2"><i class="fa-solid fa-star text-warning"></i></span>
+        }
+        for (int i = 0; i < 5 - rate.Stars; i++)
+        {
+            <span class="me-2"><i class="fa-solid fa-star text-warning"></i></span>
+        }
+        <p>@rate.Comments</p>
+    }
+</ul>
+
+
+

@@ -23,6 +23,8 @@ namespace MVC_Movies.Models
         public Gender gender { get; set; }
 
         public ICollection<Movie> Movies { get; set; }
+
+        public ICollection<ActorRate> Rates { get; set; }
     }
 
     public enum Gender

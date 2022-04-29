@@ -30,6 +30,11 @@ namespace MVC_Movies
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddRazorPages(options =>
+            {
+                //options.RootDirectory = "/Pages";
+                //options.Conventions.AuthorizeFolder("/Pages/Staff");
+            });
 
             //Life cycles of services
             services.AddTransient<IActorRepository, ActorRepository>();
@@ -80,6 +85,12 @@ namespace MVC_Movies
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+                endpoints.MapRazorPages();
+
+                endpoints.MapControllerRoute(
+                      name: "areas",
+                      pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

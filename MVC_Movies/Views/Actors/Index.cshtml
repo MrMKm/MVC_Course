@@ -49,7 +49,7 @@
         {
             <tr>
                 <td>@actor.ID</td>
-                <td>@actor.Name</td>
+                <td><a asp-page="/ActorRate" asp-route-id="@actor.ID">@actor.Name</a></td>
                 <td>@actor.BirthDate.ToShortDateString()</td>
                 <td class="text-end">@actor.OscarWon</td>
                 <td><a asp-action="Update" asp-route-id=@actor.ID class="btn-primary">Edit</a></td>

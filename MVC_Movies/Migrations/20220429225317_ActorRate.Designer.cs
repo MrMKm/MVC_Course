@@ -4,14 +4,16 @@ using MVC_Movies.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MVC_Movies.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20220429225317_ActorRate")]
+    partial class ActorRate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -370,7 +372,7 @@ namespace MVC_Movies.Migrations
             modelBuilder.Entity("MVC_Movies.Models.ActorRate", b =>
                 {
                     b.HasOne("MVC_Movies.Models.Actor", "Actor")
-                        .WithMany("Rates")
+                        .WithMany()
                         .HasForeignKey("ActorID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -454,11 +456,6 @@ namespace MVC_Movies.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("MVC_Movies.Models.Actor", b =>
-                {
-                    b.Navigation("Rates");
                 });
 
             modelBuilder.Entity("MVC_Movies.Models.Movie", b =>
