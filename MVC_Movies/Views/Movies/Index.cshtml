@@ -57,7 +57,7 @@
     {
         <tr>
             <td>@movie.ID</td>
-            <td>@movie.Title</td>
+            <td><a asp-action="Details" asp-route-id="@movie.ID">@movie.Title</a></td>
             <td>@movie.ReleaseDate.ToShortDateString()</td>
             <td>@movie.Price</td>
             <td>@movie.Gender</td>

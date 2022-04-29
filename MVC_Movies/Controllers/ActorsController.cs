@@ -35,11 +35,13 @@ namespace MVC_Movies.Controllers
             return View(actorViewModel);
         }
 
+        [Authorize(Roles = "Staff")]
         public async Task<IActionResult> Create()
         {
             return View();
         }
 
+        [Authorize(Roles = "Staff")]
         [HttpPost]
         public async Task<IActionResult> Create(Actor actor)
         {
@@ -56,6 +58,7 @@ namespace MVC_Movies.Controllers
             return View();
         }
 
+        [Authorize(Roles = "Staff")]
         public async Task<IActionResult> Update(int id)
         {
             var dbActor = await _actorRepository.GetActorByID(id);
@@ -66,6 +69,7 @@ namespace MVC_Movies.Controllers
             return View(dbActor);
         }
 
+        [Authorize(Roles = "Staff")]
         [HttpPost]
         public async Task<IActionResult> Update(Actor actor)
         {
@@ -84,6 +88,7 @@ namespace MVC_Movies.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = "Staff")]
         public async Task<IActionResult> Delete(int id)
         {
             var dbActor = await _actorRepository.GetActorByID(id);
@@ -94,6 +99,7 @@ namespace MVC_Movies.Controllers
             return View(dbActor);
         }
 
+        [Authorize(Roles = "Staff")]
         [HttpPost]
         public async Task<IActionResult> Delete(Actor actor)
         {

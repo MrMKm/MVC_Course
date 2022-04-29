@@ -14,5 +14,8 @@ namespace MVC_Movies.Repository.Interfaces
         public Task<Movie> CreateMovie(Movie movie);
         public Task<Movie> UpdateMovie(Movie movie);
         public Task DeleteMovie(Movie movie);
+        public Task<bool> RateMovie(UserRate rate);
+
+        public Task<Movie> GetMovieWithRates(int MovieID);
     }
 }

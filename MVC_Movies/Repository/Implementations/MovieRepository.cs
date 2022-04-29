@@ -43,6 +43,7 @@ namespace MVC_Movies.Repository.Implementations
         {
             var movie = await repositoryContext.Movie
                 .Include(m => m.Actors).AsNoTracking()
+                .Include(m => m.Rates).ThenInclude(r => r.User).AsNoTracking()
                 .FirstOrDefaultAsync(m => m.ID.Equals(MovieID));
 
             if (movie == null)
@@ -71,6 +72,33 @@ namespace MVC_Movies.Repository.Implementations
                 movies = movies.Where(a => a.Actors.Select(m => m.ID).Contains(filters.ActorID));
 
             return await movies.Include(m => m.Actors).AsNoTracking().ToListAsync();
+        }
+
+        public async Task<Movie> GetMovieWithRates(int MovieID)
+        {
+            var movie = await repositoryContext.Movie
+                .Include(m => m.Actors).AsNoTracking()
+                .Include(m => m.Rates).ThenInclude(r => r.User)
+                .FirstOrDefaultAsync(m => m.ID.Equals(MovieID));
+
+            if (movie == null)
+                return default;
+
+            return movie;
+        }
+
+        public async Task<bool> RateMovie(UserRate rate)
+        {
+            var movieRate = repositoryContext.MovieRate
+                .FirstOrDefault(r => r.User.Id.Equals(rate.User.Id) && r.MovieID.Equals(rate.MovieID));
+
+            if (movieRate != null)
+                return false;
+
+            repositoryContext.MovieRate.Add(rate);
+            var change = await repositoryContext.SaveChangesAsync();
+
+            return change > 0;
         }
 
         public async Task<Movie> UpdateMovie(Movie movie)

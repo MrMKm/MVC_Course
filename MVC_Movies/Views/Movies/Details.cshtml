@@ -1,0 +1,63 @@
+﻿@model Movie
+
+<h1>@Model.Title</h1>
+
+<ul>
+    <li>Gender: @Model.Gender</li>
+    <li>Rating: @Model.Rating</li>
+    <li>Price: @Model.Price</li>
+    <li>Release Date: @Model.ReleaseDate.ToShortDateString()</li>
+    <li>Actors: @string.Join(", ", Model.Actors.Select(a => a.Name))</li>
+
+    <hr />
+    @if (User.Identity.IsAuthenticated)
+    {
+        if (User.IsInRole(Role.User.ToString()))
+        {
+            <form asp-action="Rate" class="card card-body">
+                <input type="hidden" name="ID" value="@Model.ID" />
+                <div class="d-flex">
+                    <span><input type="radio" name="Stars" value="1" /><i class="fa-solid fa-star text-warning"></i></span>
+                    <span><input type="radio" name="Stars" value="2" /><i class="fa-solid fa-star text-warning"></i></span>
+                    <span><input type="radio" name="Stars" value="3" /><i class="fa-solid fa-star text-warning"></i></span>
+                    <span><input type="radio" name="Stars" value="4" /><i class="fa-solid fa-star text-warning"></i></span>
+                    <span><input type="radio" name="Stars" value="5" /><i class="fa-solid fa-star text-warning"></i></span>
+                </div>
+
+                <div class="mb-3">
+                    <label>Comments</label>
+                    <textarea name="Comments" class="form-control"></textarea>
+                </div>
+
+                <div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        }
+        else
+        {
+            <div class="lead">Sign In in User account to review this Movie</div>
+        }
+    }
+
+    <hr />
+    @foreach (var rate in Model.Rates)
+    {
+        <hr />
+        <h5>@rate.User.Name</h5>
+        for (int i = 0; i < rate.Stars; i++)
+        {
+            <span class="me-2"><i class="fa-solid fa-star text-warning"></i></span>
+        }
+        for (int i = 0; i < 5 - rate.Stars; i++)
+        {
+            <span class="me-2"><i class="fa-solid fa-star text-warning"></i></span>
+        }
+        <p>@rate.Comments</p>
+    }
+</ul>
+
+@section Scripts
+{
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

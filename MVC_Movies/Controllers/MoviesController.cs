@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MVC_Movies.Data;
 using MVC_Movies.Models;
@@ -16,11 +17,13 @@ namespace MVC_Movies.Controllers
     {
         private readonly IMovieRepository _movieRepository;
         private readonly IActorRepository _actorRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public MoviesController(IMovieRepository movieRepository, IActorRepository actorRepository)
+        public MoviesController(IMovieRepository movieRepository, IActorRepository actorRepository, UserManager<ApplicationUser> userManager)
         {
             _movieRepository = movieRepository;
             _actorRepository = actorRepository;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index(MovieFilters movieFilters)
@@ -35,6 +38,7 @@ namespace MVC_Movies.Controllers
             return View(movieVM);
         }
 
+        [Authorize(Roles = "Staff")]
         public async Task<IActionResult> Create()
         {
             return View(new MovieViewModel 
@@ -43,6 +47,7 @@ namespace MVC_Movies.Controllers
             });
         }
 
+        [Authorize(Roles = "Staff")]
         [HttpPost]
         public async Task<IActionResult> Create(MovieViewModel movieVM)
         {
@@ -62,6 +67,7 @@ namespace MVC_Movies.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = "Staff")]
         public async Task<IActionResult> Update(int id)
         {
             var dbmovie = await _movieRepository.GetMovieByID(id);
@@ -84,6 +90,7 @@ namespace MVC_Movies.Controllers
             return View(movie);
         }
 
+        [Authorize(Roles = "Staff")]
         [HttpPost]
         public async Task<IActionResult> Update(MovieViewModel movieVM)
         {
@@ -106,6 +113,7 @@ namespace MVC_Movies.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = "Staff")]
         public async Task<IActionResult> Delete(int id)
         {
             var dbmovie = await _movieRepository.GetMovieByID(id);
@@ -128,6 +136,7 @@ namespace MVC_Movies.Controllers
             return View(movie);
         }
 
+        [Authorize(Roles = "Staff")]
         [HttpPost]
         public async Task<IActionResult> Delete(MovieViewModel movieVM)
         {
@@ -137,6 +146,42 @@ namespace MVC_Movies.Controllers
             ViewData["Error"] = "Failed";
 
             return RedirectToAction(nameof(Index));
+        }
+        
+        public async Task<IActionResult> Details(int id)
+        {
+            var movie = await _movieRepository.GetMovieByID(id);
+
+            return View(movie);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "User")]
+        public async Task<IActionResult> Rate(RateMovieRequest rate)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Invalid input data");
+                return View();
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+
+            var movie = await _movieRepository.GetMovieByID(rate.ID);
+
+            var result = await _movieRepository.RateMovie(new UserRate
+            {
+                MovieID = movie.ID,
+                User = user,
+                Stars = rate.Stars,
+                Comments = rate.Comments
+            });
+
+            if (result == true)
+                return RedirectToAction("Details", new { ID = movie.ID });
+
+            else
+                return BadRequest(this);
         }
     }
 }

@@ -35,5 +35,7 @@ namespace MVC_Movies.Models
         public string Rating { get; set; }
 
         public ICollection<Actor> Actors { get; set; }
+
+        public ICollection<UserRate> Rates { get; set; } 
     }
 }
