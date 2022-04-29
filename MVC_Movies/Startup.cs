@@ -42,6 +42,8 @@ namespace MVC_Movies
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<RepositoryContext>();
 
+            services.AddMemoryCache();
+
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequiredLength = 4;

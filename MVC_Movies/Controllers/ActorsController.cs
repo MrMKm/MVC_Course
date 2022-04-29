@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using MVC_Movies.Data;
 using MVC_Movies.Models;
 using MVC_Movies.Models.Filters;
@@ -16,18 +17,35 @@ namespace MVC_Movies.Controllers
     {
         private readonly IActorRepository _actorRepository;
         private readonly IMovieRepository _movieRepository;
+        private readonly IMemoryCache _memoryCache;
 
-        public ActorsController(IActorRepository actorRepository, IMovieRepository movieRepository)
+        public ActorsController(IActorRepository actorRepository, IMovieRepository movieRepository, IMemoryCache memoryCache)
         {
             _actorRepository = actorRepository;
             _movieRepository = movieRepository;
+            _memoryCache = memoryCache;
         }
 
         public async Task<IActionResult> Index(ActorFilters actorFilters)
         {
+            List<Actor> actors = new();
+
+            if(!_memoryCache.TryGetValue("actors", out List<Actor> cacheValue))
+            {
+                cacheValue = await _actorRepository.GetActors(actorFilters);
+
+                var cacheOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(5))
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(2));
+
+                _memoryCache.Set("actors", cacheValue, cacheOptions);
+            }
+
+            actors = cacheValue;
+
             var actorViewModel = new ActorViewModel
             {
-                actors = await _actorRepository.GetActors(actorFilters),
+                actors = actors,
                 actorFilters = actorFilters,
                 movies = await _movieRepository.GetMovies(new MovieFilters())
             };
@@ -52,6 +70,8 @@ namespace MVC_Movies.Controllers
             }
 
             await _actorRepository.CreateActor(actor);
+
+            _memoryCache.Remove("actors");
 
             ViewData["Response"] = $"Actor {actor.Name} added successfully";
             ViewData["Error"] = "Failed";
@@ -81,9 +101,10 @@ namespace MVC_Movies.Controllers
 
             await _actorRepository.UpdateActor(actor);
 
+            _memoryCache.Remove("actors");
+
             ViewData["Response"] = $"Actor {actor.Name} updated successfully";
             ViewData["Error"] = "Failed";
-
 
             return RedirectToAction(nameof(Index));
         }
@@ -104,6 +125,8 @@ namespace MVC_Movies.Controllers
         public async Task<IActionResult> Delete(Actor actor)
         {
             await _actorRepository.DeleteActor(actor.ID);
+
+            _memoryCache.Remove("actors");
 
             ViewData["Response"] = $"Actor {actor.Name} deleted successfully";
             ViewData["Error"] = "Failed";
