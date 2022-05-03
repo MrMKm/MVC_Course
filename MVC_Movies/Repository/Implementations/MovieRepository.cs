@@ -74,6 +74,14 @@ namespace MVC_Movies.Repository.Implementations
             return await movies.Include(m => m.Actors).AsNoTracking().ToListAsync();
         }
 
+        public async Task<List<Movie>> GetMoviesWithRates()
+        {
+            return await repositoryContext.Movie
+                .Include(m => m.Rates).ThenInclude(r => r.User)
+                .OrderByDescending(m => m.ReleaseDate)
+                .ToListAsync();
+        }
+
         public async Task<Movie> GetMovieWithRates(int MovieID)
         {
             var movie = await repositoryContext.Movie

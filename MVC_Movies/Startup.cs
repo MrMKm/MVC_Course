@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using MVC_Movies.Data;
 using MVC_Movies.Models;
 using MVC_Movies.Repository.Implementations;
@@ -29,6 +30,34 @@ namespace MVC_Movies
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "AR_Places-API", Version = "v1" });
+
+                //var securitySchema = new OpenApiSecurityScheme
+                //{
+                //    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                //    Name = "Authorization",
+                //    In = ParameterLocation.Header,
+                //    Type = SecuritySchemeType.Http,
+                //    Scheme = "bearer",
+                //    Reference = new OpenApiReference
+                //    {
+                //        Type = ReferenceType.SecurityScheme,
+                //        Id = "Bearer"
+                //    }
+                //};
+
+                //c.AddSecurityDefinition("Bearer", securitySchema);
+
+                //var securityRequirement = new OpenApiSecurityRequirement
+                //{
+                //    { securitySchema, new[] { "Bearer" } }
+                //};
+
+                //c.AddSecurityRequirement(securityRequirement);
+            });
+
             services.AddControllersWithViews();
             services.AddRazorPages(options =>
             {
@@ -39,6 +68,7 @@ namespace MVC_Movies
             //Life cycles of services
             services.AddTransient<IActorRepository, ActorRepository>();
             services.AddTransient<IMovieRepository, MovieRepository>();
+            services.AddTransient<IMovieArticleRepository, MovieArticleRepository>();
 
             services.AddDbContext<RepositoryContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
@@ -48,6 +78,8 @@ namespace MVC_Movies
                 .AddEntityFrameworkStores<RepositoryContext>();
 
             services.AddMemoryCache();
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -61,6 +93,15 @@ namespace MVC_Movies
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Movies-API v1");
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

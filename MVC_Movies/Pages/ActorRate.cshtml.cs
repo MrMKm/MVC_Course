@@ -56,7 +56,7 @@ namespace MVC_Movies.Pages
             });
 
             if (result == true)
-                return RedirectToPage("/ActorDetails", new { ID = actor.ID });
+                return Redirect("/ActorDetails?id=" + actor.ID);
 
             else
                 return BadRequest();

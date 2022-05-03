@@ -1,0 +1,49 @@
+﻿@page
+@model MVC_Movies.Pages.Articles.NewModel
+
+<div id="alert"></div>
+
+<form method="post" id="myForm" class="formClass">
+    <div class="mb-3">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" class="form-control" />
+
+        <label for="title">Source</label>
+        <input type="text" id="source" name="source" class="form-control" />
+
+        <label for="title">Category</label>
+        <input type="text" id="category" name="category" class="form-control" />
+
+        <label for="title">Body</label>
+        <textarea type="text" id="body" name="body" class="form-control" placeholder="Write here..."></textarea>
+
+        <button type="button" class="btn btn-primary">Save</button>
+    </div>
+</form>
+
+@section Scripts
+{ 
+    <script>
+        $('form button').click(function () {
+            $.ajax({
+                type: 'POST',
+                url: '/api/articles',
+                data: JSON.stringify(convertFormToJSON('#myForm')),
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function (data) {
+                    console.log(data);
+                    $('#alert').text('Submited successfully');
+                },
+                error: function (data) {
+                    console.log(data);
+                    alert('Something went wrong...');
+                }
+            });
+        });
+
+        function convertFormToJSON(form) {            const array = $(form).serializeArray(); // Encodes the set of form elements as an array of names and values.            const json = {};            $.each(array, function () {                json[this.name] = this.value || "";            });            return json;        }
+
+    </script>
+}
+

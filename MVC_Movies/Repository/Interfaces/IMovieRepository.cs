@@ -17,5 +17,6 @@ namespace MVC_Movies.Repository.Interfaces
         public Task<bool> RateMovie(UserRate rate);
 
         public Task<Movie> GetMovieWithRates(int MovieID);
+        public Task<List<Movie>> GetMoviesWithRates();
     }
 }
